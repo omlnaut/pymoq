@@ -32,8 +32,8 @@ class _Mock(Generic[T]):
     def __init__(self, base: Type[T]):
         self._base_type = base
 
-    def __getattr__(self, __name: str) -> Wrapper:
-        return Wrapper(getattr(self._base_type, __name))
+    def __getattribute__(self, item: str) -> Wrapper:
+        return Wrapper(getattr(self._base_type, item))
 
     def __dir__(self):
         return dir(self.T)
@@ -55,6 +55,7 @@ if __name__ == "__main__":
     m. autocompletes "get"
     m.get. autocompletes "setup"
     """
+    m.get.
     m.get.setup(1)
 
     test_function(Object(m))
