@@ -55,7 +55,7 @@ if __name__ == "__main__":
     m. autocompletes "get"
     m.get. autocompletes "setup"
     """
-    m.get.
+    m.get.setup
     m.get.setup(1)
 
     test_function(Object(m))
