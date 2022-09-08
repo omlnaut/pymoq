@@ -1,5 +1,6 @@
 .idea
 .ipynb_checkpoints
 *__pycache__
+pymoq.egg-info*
 
 /.quarto/

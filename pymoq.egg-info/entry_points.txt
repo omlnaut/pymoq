@@ -1,2 +1,0 @@
-[nbdev]
-pymoq = pymoq._modidx:d
