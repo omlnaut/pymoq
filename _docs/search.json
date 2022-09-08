@@ -25,7 +25,7 @@
     "href": "index.html#notes",
     "title": "pymoq",
     "section": "Notes",
-    "text": "Notes\n\npreview documentation\neditable install library\ninstall git hooks\ncontinue with “Check out your workflows”\ninitialized nbdev repo\ninitialized ssh access for github"
+    "text": "Notes\n\nuse nbdev_prepare to\n\nbuild the library\nrun tests\nclean notebooks from metadata\nupdate readme from index notebook\n\npreview documentation\neditable install library\ninstall git hooks\ncontinue with “Check out your workflows”\ninitialized nbdev repo\ninitialized ssh access for github"
   },
   {
     "objectID": "old/nbs/Extending_Unittest_Mock.html",

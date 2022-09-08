@@ -14,6 +14,11 @@ pip install pymoq
 
 ## Notes
 
+- use `nbdev_prepare` to
+  - build the library
+  - run tests
+  - clean notebooks from metadata
+  - update readme from index notebook
 - preview documentation
 - editable install library
 - install git hooks
