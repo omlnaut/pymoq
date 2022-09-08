@@ -1,3 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://omlnaut.github.io/pymoq/core.html</loc>
+    <lastmod>2022-09-08T19:32:11.553Z</lastmod>
+  </url>
+  <url>
+    <loc>https://omlnaut.github.io/pymoq/index.html</loc>
+    <lastmod>2022-09-08T19:32:05.212Z</lastmod>
+  </url>
+  <url>
+    <loc>https://omlnaut.github.io/pymoq/old/nbs/Extending_Unittest_Mock.html</loc>
+    <lastmod>2022-09-08T19:17:23.755Z</lastmod>
+  </url>
+  <url>
+    <loc>https://omlnaut.github.io/pymoq/old/readme.html</loc>
+    <lastmod>2022-09-08T19:17:24.248Z</lastmod>
+  </url>
 </urlset>

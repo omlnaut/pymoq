@@ -5,4 +5,5 @@ d = { 'settings': { 'branch': 'master',
                 'doc_host': 'https://omlnaut.github.io',
                 'git_url': 'https://github.com/omlnaut/pymoq',
                 'lib_path': 'pymoq'},
-  'syms': {'pymoq.core': {'pymoq.core.foo': ('core.html#foo', 'pymoq/core.py')}}}
+  'syms': { 'pymoq.core': { 'pymoq.core.foo': ('core.html#foo', 'pymoq/core.py'),
+                            'pymoq.core.say_hy': ('core.html#say_hy', 'pymoq/core.py')}}}
