@@ -1,3 +1,5 @@
-﻿.idea
+.idea
 .ipynb_checkpoints
 *__pycache__
+
+/.quarto/
