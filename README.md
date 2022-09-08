@@ -14,6 +14,8 @@ pip install pymoq
 
 ## Notes
 
+- removed egg-info dir from index. It caused the pipeline to fail
+  becauce of unclean git status
 - use `nbdev_prepare` to
   - build the library
   - run tests
