@@ -4,6 +4,6 @@ project:
 website:
   title: "pymoq"
   site-url: "https://omlnaut.github.io/pymoq"
-  description: "https://omlnaut.github.io/pymoq/"
+  description: "Extending unittest-mock with moq-like validators"
   repo-branch: master
   repo-url: "https://github.com/omlnaut/pymoq"
