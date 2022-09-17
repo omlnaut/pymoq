@@ -16,12 +16,4 @@ d = { 'settings': { 'branch': 'master',
                                            'pymoq.argument_validators.ArgumentValidator.is_valid': ( 'validators.html#is_valid',
                                                                                                      'pymoq/argument_validators.py')},
             'pymoq.core': { 'pymoq.core.AnyCallable': ('core.html#anycallable', 'pymoq/core.py'),
-                            'pymoq.core.AnyCallable.__call__': ('core.html#__call__', 'pymoq/core.py')},
-            'pymoq.validators': { 'pymoq.validators.ArgumentFunctionValidator': ( 'validators.html#argumentfunctionvalidator',
-                                                                                  'pymoq/validators.py'),
-                                  'pymoq.validators.ArgumentFunctionValidator.__init__': ( 'validators.html#__init__',
-                                                                                           'pymoq/validators.py'),
-                                  'pymoq.validators.ArgumentFunctionValidator.is_valid': ( 'validators.html#is_valid',
-                                                                                           'pymoq/validators.py'),
-                                  'pymoq.validators.ArgumentValidator': ('validators.html#argumentvalidator', 'pymoq/validators.py'),
-                                  'pymoq.validators.ArgumentValidator.is_valid': ('validators.html#is_valid', 'pymoq/validators.py')}}}
+                            'pymoq.core.AnyCallable.__call__': ('core.html#__call__', 'pymoq/core.py')}}}
