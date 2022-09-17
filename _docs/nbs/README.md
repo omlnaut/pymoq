@@ -14,6 +14,7 @@ pip install pymoq
 
 ## Notes
 
+- added vim extensions to jupyterlab
 - removed egg-info dir from index. It caused the pipeline to fail
   becauce of unclean git status
 - use `nbdev_prepare` to
