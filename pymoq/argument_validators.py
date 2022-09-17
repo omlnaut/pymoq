@@ -10,7 +10,7 @@ from .core import AnyCallable
 # %% ../nbs/01_validators.ipynb 7
 @runtime_checkable
 class ArgumentValidator(Protocol):
-    "Interface for all argument validators"
+    "Interface for all argument validators. testi"
     def is_valid(self, argument: Any) -> bool:
         ...
 
