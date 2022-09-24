@@ -14,6 +14,7 @@ pip install pymoq
 
 ## Notes
 
+- moved notebooks back to nbs folder
 - troubles with pipelines…
   - github container doesn’t use min_python_version from settings.ini
   - manually set version in test.yaml fixes the problem, but really this
