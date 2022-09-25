@@ -14,6 +14,7 @@ pip install pymoq
 
 ## Notes
 
+- added explicit positions to argument validator
 - started signature validator
 - moved notebooks back to nbs folder
 - troubles with pipelines…
