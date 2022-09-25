@@ -7,9 +7,6 @@ __all__ = ['SignatureValidator']
 from .argument_validators import ArgumentValidator, ArgumentFunctionValidator
 from typing import Any
 
-# %% ../nbs/02_signature_validators.ipynb 2
-from fastcore.test import test_fail
-
 # %% ../nbs/02_signature_validators.ipynb 5
 class SignatureValidator:
     "This class holds a list of argument validators and can evaluate a list of arguments against those validators"
