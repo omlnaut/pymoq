@@ -14,6 +14,7 @@ pip install pymoq
 
 ## Notes
 
+- started signature validator
 - moved notebooks back to nbs folder
 - troubles with pipelines…
   - github container doesn’t use min_python_version from settings.ini

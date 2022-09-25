@@ -10,24 +10,34 @@ from .core import AnyCallable
 # %% ../nbs/01_validators.ipynb 7
 @runtime_checkable
 class ArgumentValidator(Protocol):
-    @property
-    def name() -> str|None:
-        ...
-        
     "Interface for all argument validators."
+    
+    @property
+    def name() -> str:
+        "Name of the argument in the signature"
+        
+    @property
+    def position() -> int:
+        "Position of the argument in the signature"
+        
     def is_valid(self, argument: Any) -> bool:
         ...
 
 # %% ../nbs/01_validators.ipynb 9
 class ArgumentFunctionValidator:
     "Validate an argument by evaluating an arbitrary function"
-    def __init__(self, func: AnyCallable[bool], name: str|None = None):
+    def __init__(self, func: AnyCallable[bool], name: str, position: int):
         self._func = func
         self._name = name
+        self._position = position
         
     @property
-    def name(self) -> str|None:
+    def name(self) -> str:
         return self._name
+    
+    @property
+    def position(self) -> int:
+        return self._position
         
     def is_valid(self, argument: Any) -> bool:
         return self._func(argument)
@@ -36,20 +46,31 @@ assert isinstance(ArgumentFunctionValidator, ArgumentValidator), "ArgumentFuncti
 
 # %% ../nbs/01_validators.ipynb 16
 class SignatureValidator:
+    "This class holds a list of argument validators and can evaluate a list of arguments against those validators"
     def __init__(self, argument_validators: list[ArgumentValidator]):
         self.argument_validators = argument_validators
         self._named_validators = {validator.name: validator
-                                  for validator in self.argument_validators
-                                  if validator.name is not None }
-        if len(self._named_validators) != len(set(self._named_validators.keys())):
-            raise ValueError(f"List of argument validators contains duplicate names: {list(self._named_validators.keys())}")
+                                  for validator in self.argument_validators}
+        
+        self._positional_validators = {validator.position: validator
+                                      for validator in self.argument_validators}
+        
+        names = [validator.name for validator in self.argument_validators]
+        if len(names) != len(set(names)):
+            raise ValueError(f"List of argument validators contains duplicate names: {names}")
+            
+        positions = [validator.position for validator in self.argument_validators]
+        if len(positions) != len(set(positions)):
+            raise ValueError(f"List of argument validators contains duplicate positions: {positions}")
         
     def is_valid(self, *args: list[Any], **kwargs: dict[str, Any]) -> bool:
         if len(args) > len(self.argument_validators): return False
     
         # positional arguments
-        if not all(argument_validator.is_valid(arg) for arg,argument_validator in zip(args, self.argument_validators)):
-            return False
+        for position, value in enumerate(args):
+            if not position in self._positional_validators.keys(): return False
+            
+            if not self._positional_validators[position].is_valid(value): return False
         
         # named arguments
         for name,value in kwargs.items():
