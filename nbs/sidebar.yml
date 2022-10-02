@@ -7,3 +7,4 @@ website:
       - 02_signature_validators.ipynb
       - 03_return_value_generators.ipynb
       - 04_mocking.functions.ipynb
+      - 05_mocking_objects.ipynb
