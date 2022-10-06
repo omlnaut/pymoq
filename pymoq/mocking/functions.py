@@ -6,11 +6,12 @@ __all__ = ['FunctionMock', 'Setup']
 # %% ../../nbs/04_mocking.functions.ipynb 1
 import inspect
 from ..core import AnyCallable
+from ..argument_validators import ArgumentFunctionValidator
 from ..signature_validators import SignatureValidator, signature_validator_from_arguments
 from ..return_value_generators import ReturnValueGenerator
 from fastcore.basics import patch_to
 
-# %% ../../nbs/04_mocking.functions.ipynb 11
+# %% ../../nbs/04_mocking.functions.ipynb 12
 class FunctionMock:
     "Mocks a function object based on its signature"
     def __init__(self, func: AnyCallable):
@@ -18,15 +19,15 @@ class FunctionMock:
         self._signature = inspect.signature(self._func)
         self._setups = []
         
-    def arguments_valid(self, *args, **kwargs) -> bool:
+    def arguments_valid(self, *args, **kwargs) -> FlaggedReturn:
         "Given an arbitrary argument list (both positional and keyword arguments), returns True if the mocked function could be called with those arguments"
         try:
             self._signature.bind(*args, **kwargs)
-            return True
-        except:
-            return False
+            return FlaggedReturn(True)
+        except Exception as e:
+            return FlaggedReturn(False, e)
 
-# %% ../../nbs/04_mocking.functions.ipynb 21
+# %% ../../nbs/04_mocking.functions.ipynb 27
 class Setup:
     "This class bundles a signature validator with a call-result-action"
     def __init__(self, signature_validator: SignatureValidator):

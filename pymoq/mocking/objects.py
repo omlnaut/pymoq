@@ -9,7 +9,7 @@ def _is_public_name(name: str):
     return not name.startswith('_')
 
 def get_public_names(protocol: type) -> list[str]:
-    "Returns all names that are considered public from the given"
+    "Returns all names that are considered public from the given class"
     names = [name for name in dir(protocol) if _is_public_name(name)]
     return names
 

@@ -45,6 +45,6 @@ class SignatureValidator:
         return True
 
 # %% ../nbs/02_signature_validators.ipynb 19
-def signature_validator_from_arguments(cls, *args, **kwargs):
+def signature_validator_from_arguments(*args, **kwargs) -> SignatureValidator:
     "Construct a `SignatureValidator` by smartly constructing `ArgumentValidators` when no actual argument validators are given"
-    return SignatureValidator([])
+    return SignatureValidator(args)
