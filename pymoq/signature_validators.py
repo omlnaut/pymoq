@@ -3,12 +3,12 @@
 # %% auto 0
 __all__ = ['SignatureValidator', 'signature_validator_from_arguments']
 
-# %% ../nbs/02_signature_validators.ipynb 1
+# %% ../nbs/02_signature_validators.ipynb 2
 from .argument_validators import ArgumentValidator, ArgumentFunctionValidator
 from typing import Any
 from fastcore.basics import patch_to
 
-# %% ../nbs/02_signature_validators.ipynb 5
+# %% ../nbs/02_signature_validators.ipynb 6
 class SignatureValidator:
     "This class holds a list of argument validators and can evaluate a list of arguments against those validators"
     def __init__(self, argument_validators: list[ArgumentValidator]):
@@ -44,7 +44,7 @@ class SignatureValidator:
         
         return True
 
-# %% ../nbs/02_signature_validators.ipynb 19
+# %% ../nbs/02_signature_validators.ipynb 20
 def signature_validator_from_arguments(*args, **kwargs) -> SignatureValidator:
     "Construct a `SignatureValidator` by smartly constructing `ArgumentValidators` when no actual argument validators are given"
     return SignatureValidator(args)

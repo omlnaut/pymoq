@@ -3,11 +3,11 @@
 # %% auto 0
 __all__ = ['ArgumentValidator', 'ArgumentFunctionValidator']
 
-# %% ../nbs/01_validators.ipynb 1
+# %% ../nbs/01_validators.ipynb 2
 from typing import Protocol, Any, runtime_checkable
 from .core import AnyCallable
 
-# %% ../nbs/01_validators.ipynb 7
+# %% ../nbs/01_validators.ipynb 8
 @runtime_checkable
 class ArgumentValidator(Protocol):
     "Interface for all argument validators."
@@ -23,7 +23,7 @@ class ArgumentValidator(Protocol):
     def is_valid(self, argument: Any) -> bool:
         ...
 
-# %% ../nbs/01_validators.ipynb 9
+# %% ../nbs/01_validators.ipynb 10
 class ArgumentFunctionValidator:
     "Validate an argument by evaluating an arbitrary function"
     def __init__(self, func: AnyCallable[bool], name: str, position: int):
