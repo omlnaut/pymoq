@@ -5,6 +5,7 @@ pymoq
 
 Following the end-to-end
 [tutorial](https://nbdev.fast.ai/Tutorials/tutorial.html) for nbdev.
+Project homepage: [github](https://github.com/omlnaut/pymoq)
 
 ## Install
 
@@ -52,7 +53,9 @@ from pymoq.argument_validators import ArgumentFunctionValidator, AnyArg
 
 ``` python
 mock = pymoq.mocking.objects.Mock(IWeb)
-mock.get.setup('https://some_base.com/ressource').returns(lambda self,url: True)
+mock.get\
+    .setup('https://some_base.com/ressource')\
+    .returns(lambda self,url: True)
 
 fetcher = RessourceFetcher(mock)
 
