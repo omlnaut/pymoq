@@ -53,8 +53,8 @@ from pymoq.argument_validators import ArgumentFunctionValidator
 ``` python
 mock = pymoq.mocking.objects.Mock(IWeb)
 mock.get.setup(
-    ArgumentFunctionValidator(lambda self: True, name='self', position=0),
-    ArgumentFunctionValidator(lambda s: s=='https://some_base.com/ressource', name='url', position=1)).returns(lambda self,url: True)
+    lambda self: True,
+    lambda s: s=='https://some_base.com/ressource').returns(lambda self,url: True)
 
 fetcher = RessourceFetcher(mock)
 
