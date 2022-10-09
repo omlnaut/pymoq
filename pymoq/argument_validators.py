@@ -42,4 +42,7 @@ class ArgumentFunctionValidator:
     def is_valid(self, argument: Any) -> bool:
         return self._func(argument)
     
+    def __str__(self): return f'ArgumentFunctionValidator({self.name}, {self.position})'
+    def __repr__(self): return str(self)
+    
 assert isinstance(ArgumentFunctionValidator, ArgumentValidator), "ArgumentFunctionValidator does not implement the ArgumentValidator-Protocol"

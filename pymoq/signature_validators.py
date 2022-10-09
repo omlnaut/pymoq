@@ -45,6 +45,21 @@ class SignatureValidator:
         return True
 
 # %% ../nbs/02_signature_validators.ipynb 20
-def signature_validator_from_arguments(*args, **kwargs) -> SignatureValidator:
+def signature_validator_from_arguments(argument_names: list[str], *args, **kwargs) -> SignatureValidator:
     "Construct a `SignatureValidator` by smartly constructing `ArgumentValidators` when no actual argument validators are given"
-    return SignatureValidator(args)
+    argument_validators = []
+    
+    for position, (name,argument) in enumerate(zip(argument_names,args)):
+        if isinstance(argument, ArgumentValidator):
+            argument_validators.append(argument)
+        elif callable(argument):
+            argument_validators.append(ArgumentFunctionValidator(argument, name, position))
+        
+    for name,named_argument in kwargs.items():
+        if isinstance(named_argument, ArgumentValidator):
+            argument_validators.append(named_argument)
+        elif callable(named_argument):
+            last_position = max(map(lambda val: val.position, argument_validators))
+            argument_validators.append(ArgumentFunctionValidator(named_argument, name, last_position+1))
+    
+    return SignatureValidator(argument_validators)

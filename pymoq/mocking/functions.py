@@ -30,6 +30,7 @@ class FunctionMock:
     def __init__(self, func: AnyCallable):
         self._func = func
         self._signature = inspect.signature(self._func)
+        self._argument_names = list(self._signature.parameters.keys())
         self._setups = []
         
         self._is_class_method = is_class_method(self._func)
@@ -39,7 +40,7 @@ class FunctionMock:
         self._signature.bind(*args, **kwargs)
         return True
 
-# %% ../../nbs/04_mocking.functions.ipynb 37
+# %% ../../nbs/04_mocking.functions.ipynb 38
 class Setup:
     "This class bundles a signature validator with a call-result-action"
     def __init__(self, signature_validator: SignatureValidator):
@@ -57,16 +58,16 @@ class Setup:
         "Calls the underlying `ReturnValueGenerator` the get the return value for the exact argument list"
         return self._return_value_generator(*args, **kwargs)
 
-# %% ../../nbs/04_mocking.functions.ipynb 39
+# %% ../../nbs/04_mocking.functions.ipynb 40
 @patch_to(FunctionMock)
 def setup(self, *args, **kwargs):
     # todo: actually implement this
-    sig = signature_validator_from_arguments(*args, **kwargs)
+    sig = signature_validator_from_arguments(self._argument_names, *args, **kwargs)
     self._setups.append(Setup(sig))
     
     return self._setups[-1]
 
-# %% ../../nbs/04_mocking.functions.ipynb 50
+# %% ../../nbs/04_mocking.functions.ipynb 51
 @patch_to(FunctionMock)
 def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any]) -> dict[str, Any]:
     parameters = list(self._signature.parameters.items())
@@ -78,7 +79,7 @@ def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any]) -> dict[str,
         
     return kwargs
 
-# %% ../../nbs/04_mocking.functions.ipynb 58
+# %% ../../nbs/04_mocking.functions.ipynb 59
 @patch_to(FunctionMock)
 def __call__(self, *args, **kwargs):
     if self._is_class_method:
