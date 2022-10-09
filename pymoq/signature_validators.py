@@ -4,7 +4,7 @@
 __all__ = ['SignatureValidator', 'signature_validator_from_arguments']
 
 # %% ../nbs/02_signature_validators.ipynb 2
-from .argument_validators import ArgumentValidator, ArgumentFunctionValidator
+from .argument_validators import ArgumentValidator, ArgumentFunctionValidator, argument_validator_from_argument 
 from typing import Any
 from fastcore.basics import patch_to
 
@@ -49,17 +49,20 @@ def signature_validator_from_arguments(argument_names: list[str], *args, **kwarg
     "Construct a `SignatureValidator` by smartly constructing `ArgumentValidators` when no actual argument validators are given"
     argument_validators = []
     
+    # positional arguments
     for position, (name,argument) in enumerate(zip(argument_names,args)):
-        if isinstance(argument, ArgumentValidator):
-            argument_validators.append(argument)
-        elif callable(argument):
-            argument_validators.append(ArgumentFunctionValidator(argument, name, position))
+        arg_validator = argument_validator_from_argument(argument, name, position)
+        argument_validators.append(arg_validator)
         
+    # keyword arguments
     for name,named_argument in kwargs.items():
         if isinstance(named_argument, ArgumentValidator):
-            argument_validators.append(named_argument)
-        elif callable(named_argument):
+            position = named_argument.position + 1
+        else:
             last_position = max(map(lambda val: val.position, argument_validators))
-            argument_validators.append(ArgumentFunctionValidator(named_argument, name, last_position+1))
+            position = last_position + 1
+
+        arg_validator = argument_validator_from_argument(named_argument, name, position)
+        argument_validators.append(arg_validator)
     
     return SignatureValidator(argument_validators)

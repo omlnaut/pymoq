@@ -8,7 +8,7 @@ import inspect
 from typing import Any
 
 from ..core import AnyCallable
-from ..argument_validators import ArgumentFunctionValidator
+from ..argument_validators import ArgumentFunctionValidator, AnyArg
 from ..signature_validators import SignatureValidator, signature_validator_from_arguments
 from ..return_value_generators import ReturnValueGenerator
 
@@ -61,13 +61,14 @@ class Setup:
 # %% ../../nbs/04_mocking.functions.ipynb 40
 @patch_to(FunctionMock)
 def setup(self, *args, **kwargs):
-    # todo: actually implement this
+    if self._is_class_method:
+        args = (AnyArg(),) + args
     sig = signature_validator_from_arguments(self._argument_names, *args, **kwargs)
     self._setups.append(Setup(sig))
     
     return self._setups[-1]
 
-# %% ../../nbs/04_mocking.functions.ipynb 51
+# %% ../../nbs/04_mocking.functions.ipynb 55
 @patch_to(FunctionMock)
 def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any]) -> dict[str, Any]:
     parameters = list(self._signature.parameters.items())
@@ -79,7 +80,7 @@ def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any]) -> dict[str,
         
     return kwargs
 
-# %% ../../nbs/04_mocking.functions.ipynb 59
+# %% ../../nbs/04_mocking.functions.ipynb 63
 @patch_to(FunctionMock)
 def __call__(self, *args, **kwargs):
     if self._is_class_method:

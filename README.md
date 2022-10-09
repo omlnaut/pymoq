@@ -47,14 +47,12 @@ returned from the source, this method should return `True`, otherwise
 
 ``` python
 import pymoq.mocking.objects
-from pymoq.argument_validators import ArgumentFunctionValidator
+from pymoq.argument_validators import ArgumentFunctionValidator, AnyArg
 ```
 
 ``` python
 mock = pymoq.mocking.objects.Mock(IWeb)
-mock.get.setup(
-    lambda self: True,
-    lambda s: s=='https://some_base.com/ressource').returns(lambda self,url: True)
+mock.get.setup('https://some_base.com/ressource').returns(lambda self,url: True)
 
 fetcher = RessourceFetcher(mock)
 
