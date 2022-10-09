@@ -88,7 +88,6 @@ def __call__(self, *args, **kwargs):
         
     kwargs = self.fill_up_arg_list(args, kwargs)
     
-    print(args, kwargs)
     for setup in reversed(self._setups):
         if setup.is_valid(*args, **kwargs):
             return_value = setup.get_return_value(*args, **kwargs)

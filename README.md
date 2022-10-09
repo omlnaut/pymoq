@@ -12,6 +12,56 @@ Following the end-to-end
 pip install pymoq
 ```
 
+## How to use
+
+Suppose we have the following setup in a python backend.
+
+``` python
+from typing import Protocol
+
+class IWeb(Protocol):
+    "Interface for accessing internet resources"
+    
+    def get(self, url:str) -> str:
+        "Fetches the ressource at `url` and returns it in string representation"
+```
+
+``` python
+class RessourceFetcher:
+    base_url: str = "https://some_base.com/"
+    
+    def __init__(self, web: IWeb):
+        self._web = web
+    
+    def check_ressource(self, ressource_name: str) -> bool:
+        url = self.base_url + ressource_name
+        ressource = self._web.get(url)
+        
+        return ressource is not None
+```
+
+We want to test the `fetch_ressource` method of `RessourceFetcher`. More
+specifically, we want to test that if the ressource is correctly
+returned from the source, this method should return `True`, otherwise
+`False`.
+
+``` python
+import pymoq.mocking.objects
+from pymoq.argument_validators import ArgumentFunctionValidator
+```
+
+``` python
+mock = pymoq.mocking.objects.Mock(IWeb)
+mock.get.setup(
+    ArgumentFunctionValidator(lambda self: True, name='self', position=0),
+    ArgumentFunctionValidator(lambda s: s=='https://some_base.com/ressource', name='url', position=1)).returns(lambda self,url: True)
+
+fetcher = RessourceFetcher(mock)
+
+assert fetcher.check_ressource('ressource')
+assert not fetcher.check_ressource('invalid_ressource')
+```
+
 ## Notes
 
 - started return_value_generators
