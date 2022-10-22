@@ -62,28 +62,3 @@ fetcher = RessourceFetcher(mock)
 assert fetcher.check_ressource('ressource')
 assert not fetcher.check_ressource('invalid_ressource')
 ```
-
-## Notes
-
-- started return_value_generators
-- added explicit positions to argument validator
-- started signature validator
-- moved notebooks back to nbs folder
-- troubles with pipelines…
-  - github container doesn’t use min_python_version from settings.ini
-  - manually set version in test.yaml fixes the problem, but really this
-    should be auto-populated
-- added vim extensions to jupyterlab
-- removed egg-info dir from index. It caused the pipeline to fail
-  becauce of unclean git status
-- use `nbdev_prepare` to
-  - build the library
-  - run tests
-  - clean notebooks from metadata
-  - update readme from index notebook
-- preview documentation
-- editable install library
-- install git hooks
-- continue with “Check out your workflows”
-- initialized nbdev repo
-- initialized ssh access for github

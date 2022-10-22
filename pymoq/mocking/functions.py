@@ -32,6 +32,7 @@ class FunctionMock:
         self._signature = inspect.signature(self._func)
         self._argument_names = list(self._signature.parameters.keys())
         self._setups = []
+        self._calls = []
         
         self._is_class_method = is_class_method(self._func)
         
@@ -80,7 +81,7 @@ def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any]) -> dict[str,
         
     return kwargs
 
-# %% ../../nbs/04_mocking.functions.ipynb 63
+# %% ../../nbs/04_mocking.functions.ipynb 64
 @patch_to(FunctionMock)
 def __call__(self, *args, **kwargs):
     if self._is_class_method:
@@ -89,6 +90,7 @@ def __call__(self, *args, **kwargs):
     self.arguments_valid(*args, **kwargs)
         
     kwargs = self.fill_up_arg_list(args, kwargs)
+    self._calls.append((args, kwargs))
     
     for setup in reversed(self._setups):
         if setup.is_valid(*args, **kwargs):
