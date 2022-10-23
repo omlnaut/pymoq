@@ -48,7 +48,6 @@ returned from the source, this method should return `True`, otherwise
 
 ``` python
 import pymoq.mocking.objects
-from pymoq.argument_validators import ArgumentFunctionValidator, AnyArg
 ```
 
 ``` python
