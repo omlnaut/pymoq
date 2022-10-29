@@ -5,6 +5,7 @@ __all__ = ['AnyArg', 'ArgumentValidator', 'ArgumentFunctionValidator', 'argument
 
 # %% ../nbs/01_validators.ipynb 2
 from typing import Protocol, Any, runtime_checkable
+from collections.abc import Callable
 from .core import AnyCallable
 
 # %% ../nbs/01_validators.ipynb 8
@@ -49,13 +50,15 @@ assert isinstance(ArgumentFunctionValidator, ArgumentValidator), "ArgumentFuncti
 
 # %% ../nbs/01_validators.ipynb 16
 def argument_validator_from_argument(argument: Any, name:str, position: int) -> ArgumentValidator:
-    if isinstance(argument, ArgumentValidator):
-        return argument
+    match argument:
+        case ArgumentValidator():
+            return argument
+        case type():
+            return ArgumentFunctionValidator(lambda v: isinstance(v, argument), name=name, position=position)
+        case Callable():
+            return ArgumentFunctionValidator(argument, name=name, position=position)
     
-    if callable(argument):
-        return ArgumentFunctionValidator(argument, name=name, position=position)
-    else:
-        return ArgumentFunctionValidator(lambda v: v==argument, name=name, position=position)
+    return ArgumentFunctionValidator(lambda v: v==argument, name=name, position=position)
 
-# %% ../nbs/01_validators.ipynb 24
+# %% ../nbs/01_validators.ipynb 29
 AnyArg = lambda: lambda v: True
