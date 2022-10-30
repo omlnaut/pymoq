@@ -7,6 +7,9 @@ Following the end-to-end
 [tutorial](https://nbdev.fast.ai/Tutorials/tutorial.html) for nbdev.
 Project homepage: [github](https://github.com/omlnaut/pymoq)
 
+Currently facing pipeline issues:
+[issue](https://github.com/fastai/nbdev/issues/1190)
+
 ## Install
 
 ``` sh
