@@ -76,10 +76,16 @@ def setup(self, *args, **kwargs):
 
 # %% ../../nbs/04_mocking.functions.ipynb 56
 @patch_to(FunctionMock)
-def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any]) -> dict[str, Any]:
+def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any], verbose: bool=False) -> dict[str, Any]:
+    if verbose: print("fill_up_arg_list")
     parameters = list(self._signature.parameters.items())
     names = list(map(lambda p: p[0], parameters))
     n_positional = len(args)
+    
+    if verbose: print(f'parameters: {parameters}')
+    if verbose: print(f'names: {names}')
+    if verbose: print(f'n_positional: {n_positional}')
+    
     for name,param in parameters[n_positional:]:
         if name in kwargs: continue
         kwargs[name] = param.default
@@ -106,7 +112,7 @@ def __call__(self, *args, **kwargs):
 from dataclasses import dataclass
 from typing import Any
 
-# %% ../../nbs/06_Verfiy.ipynb 17
+# %% ../../nbs/06_Verfiy.ipynb 18
 @dataclass
 class VerifiedCalls:
     verified_calls: list[tuple[list[Any], dict[str, Any]]]
@@ -136,19 +142,18 @@ class VerifiedCalls:
         msg = "\n".join((general_msg, calls_str, total_calls_str))
         return msg
 
-# %% ../../nbs/06_Verfiy.ipynb 18
+# %% ../../nbs/06_Verfiy.ipynb 19
 @patch_to(FunctionMock)
 def verify(self, *args, **kwargs) -> VerifiedCalls:
-    kwargs = self.fill_up_arg_list(args, kwargs)
-    if self._is_class_method:
-        args = remove_self_parameter(args)
+    kwargs = self.fill_up_arg_list(add_self_parameter(args), kwargs)
+    args = (AnyArg(),) + args
     sign_val = signature_validator_from_arguments(self._argument_names, *args, **kwargs)
+    
     calls = []
     
     for call_args, call_kwargs in self._calls:
-        if self._is_class_method:
-            call_args = remove_self_parameter(call_args)
         call_kwargs = self.fill_up_arg_list(call_args, call_kwargs)
+
         
         if sign_val.is_valid(*call_args, **call_kwargs):
             calls.append((call_args, call_kwargs))

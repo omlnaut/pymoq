@@ -23,7 +23,7 @@ from typing import Protocol
 class IWeb(Protocol):
     "Interface for accessing internet resources"
     
-    def get(self, url:str) -> str:
+    def get(self, url:str, page:int, verbose:bool=False) -> str:
         "Fetches the ressource at `url` and returns it in string representation"
 ```
 
@@ -34,9 +34,9 @@ class RessourceFetcher:
     def __init__(self, web: IWeb):
         self._web = web
     
-    def check_ressource(self, ressource_name: str) -> bool:
+    def check_ressource(self, ressource_name: str, page:int, verbose:bool=False) -> bool:
         url = self.base_url + ressource_name
-        ressource = self._web.get(url)
+        ressource = self._web.get(url, page, verbose)
         
         return ressource is not None
 ```
@@ -46,6 +46,8 @@ specifically, we want to test that if the ressource is correctly
 returned from the source, this method should return `True`, otherwise
 `False`.
 
+### Setting up the mock
+
 ``` python
 import pymoq.mocking.objects
 ```
@@ -53,11 +55,47 @@ import pymoq.mocking.objects
 ``` python
 mock = pymoq.mocking.objects.Mock(IWeb)
 mock.get\
-    .setup('https://some_base.com/ressource')\
-    .returns(lambda self,url: True)
+    .setup('https://some_base.com/ressource', int, False)\
+    .returns(lambda self,url,page,verbose: True)
 
 fetcher = RessourceFetcher(mock)
+```
 
-assert fetcher.check_ressource('ressource')
-assert not fetcher.check_ressource('invalid_ressource')
+If the call matches the siganture defined in the `setup` method, the
+lambda in `returns` is called and its return value is returned:
+
+``` python
+assert fetcher.check_ressource('ressource', 1)
+```
+
+If any part of the signature does not match, `None` is returned:
+
+``` python
+assert not fetcher.check_ressource('other_ressource', 1) # wrong ressource name
+assert not fetcher.check_ressource('ressource', "1") # wrong type of page argument
+assert not fetcher.check_ressource('ressource', "1", verbose=True) # wrong value for verbose argument
+```
+
+### Verification
+
+One might want to check how often a function mock was invoked with a
+specific call signature. This can easily be done via the `.verify`
+method:
+
+``` python
+mock = pymoq.mocking.objects.Mock(IWeb)
+fetcher = RessourceFetcher(mock)
+
+# setup
+mock.get.setup(str, int, bool).returns(lambda self,url,page,verbose: True)
+
+# act
+fetcher.check_ressource('ressource', 1)
+fetcher.check_ressource('ressource', 2)
+fetcher.check_ressource('ressource', 1, verbose=True)
+
+# assert
+mock.get.verify(str, int, bool).times(3)
+mock.get.verify(str, int, bool).more_than(1)
+mock.get.verify(str, str).never()
 ```

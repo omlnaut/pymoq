@@ -27,10 +27,11 @@ class ArgumentValidator(Protocol):
 # %% ../nbs/01_validators.ipynb 10
 class ArgumentFunctionValidator:
     "Validate an argument by evaluating an arbitrary function"
-    def __init__(self, func: AnyCallable[bool], name: str, position: int):
+    def __init__(self, func: AnyCallable[bool], name: str, position: int, display:str|None = None):
         self._func = func
         self._name = name
         self._position = position
+        self._display = display
         
     @property
     def name(self) -> str:
@@ -43,22 +44,32 @@ class ArgumentFunctionValidator:
     def is_valid(self, argument: Any) -> bool:
         return self._func(argument)
     
-    def __str__(self): return f'ArgumentFunctionValidator({self.name}, {self.position})'
+    def __str__(self):
+        if self._display is None:
+            return f'ArgumentFunctionValidator(name:{self.name}, position={self.position})'
+        return f'ArgumentFunctionValidator(argument_name:{self.name}, position={self.position}): {self._display}'
     def __repr__(self): return str(self)
     
 assert isinstance(ArgumentFunctionValidator, ArgumentValidator), "ArgumentFunctionValidator does not implement the ArgumentValidator-Protocol"
 
 # %% ../nbs/01_validators.ipynb 16
-def argument_validator_from_argument(argument: Any, name:str, position: int) -> ArgumentValidator:
+def argument_validator_from_argument(argument: Any, name:str, position: int, verbose:bool=False) -> ArgumentValidator:
+    if verbose: print(f"Constructing ArgumentValidatorFrom {argument}")
     match argument:
         case ArgumentValidator():
             return argument
         case type():
-            return ArgumentFunctionValidator(lambda v: isinstance(v, argument), name=name, position=position)
+            return ArgumentFunctionValidator(lambda v: isinstance(v, argument), name=name, position=position, display=f'any_{argument.__name__}')
         case Callable():
-            return ArgumentFunctionValidator(argument, name=name, position=position)
+            if hasattr(argument, 'display'):
+                display = argument.display
+            else:
+                display = 'callable()'
+            
+            return ArgumentFunctionValidator(argument, name=name, position=position, display=display)
     
-    return ArgumentFunctionValidator(lambda v: v==argument, name=name, position=position)
+    return ArgumentFunctionValidator(lambda v: v==argument, name=name, position=position, display=f'== {argument}')
 
-# %% ../nbs/01_validators.ipynb 29
+# %% ../nbs/01_validators.ipynb 33
 AnyArg = lambda: lambda v: True
+AnyArg.display = 'any()'
