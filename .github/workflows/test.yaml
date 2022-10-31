@@ -28,7 +28,7 @@ jobs:
               pip install -U git+https://github.com/fastai/execnb.git
               pip install -U git+https://github.com/fastai/nbdev.git
             else
-              pip install -U nbdev
+              pip install -U git+https://github.com/omlnaut/nbdev.git
             fi
             echo "Doing editable install..."
             test -f setup.py && pip install -e ".[dev]"
@@ -48,7 +48,6 @@ jobs:
               false
             fi
             nbdev_export
-            nbdev_export --path nbs/06_Verfiy.ipynb
             if [[ `git status --porcelain -uno` ]]; then
               echo "::error::Notebooks and library are not in sync.  Please run nbdev_export."
               git status -uno
