@@ -13,7 +13,8 @@ jobs:
             python-version: '3.10'
             cache: "pip"
             cache-dependency-path: settings.ini
-        - uses: lhotari/action-upterm@v1
+        # uncomment the line below to enable ssh connecting to the running worker
+        #- uses: lhotari/action-upterm@v1
         - name: Test with nbdev
           env:
             USE_PRE: ${{ inputs.pre }}
@@ -47,6 +48,7 @@ jobs:
               false
             fi
             nbdev_export
+            nbdev_export --path nbs/06_Verfiy.ipynb
             if [[ `git status --porcelain -uno` ]]; then
               echo "::error::Notebooks and library are not in sync.  Please run nbdev_export."
               git status -uno
