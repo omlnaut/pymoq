@@ -122,7 +122,8 @@ with pytest.raises(WebException):
     fetcher.check_ressource('unavailable_ressource', 1, True)
     
 # does not raise exception if call signature does not match
-fetcher.check_ressource('https://some_base.com/unavailable_ressource', 1, True);
+
+fetcher.check_ressource('available_ressource', 1, True);
 ```
 
 # Things to add
