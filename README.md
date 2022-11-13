@@ -102,3 +102,11 @@ mock.get.verify(str, int, bool).times(3)
 mock.get.verify(str, int, bool).more_than(1)
 mock.get.verify(str, str).never()
 ```
+
+# Things to add
+
+- verify -\> less_than, more_or_equal_than
+- special type-validators for setup
+  - AnyInt().GreaterThan(5)
+- setup().throws
+- setup().sequence(…)
