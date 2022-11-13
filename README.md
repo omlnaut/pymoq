@@ -103,10 +103,31 @@ mock.get.verify(str, int, bool).more_than(1)
 mock.get.verify(str, str).never()
 ```
 
+### Setup exceptions
+
+``` python
+class WebException(Exception):
+    """Exception that describes web-access errors"""
+```
+
+``` python
+mock = pymoq.mocking.objects.Mock(IWeb)
+fetcher = RessourceFetcher(mock)
+
+# setup failing web call
+mock.get.setup('https://some_base.com/unavailable_ressource', int, bool).throws(WebException())
+
+# act and assert exception
+with pytest.raises(WebException):
+    fetcher.check_ressource('unavailable_ressource', 1, True)
+    
+# does not raise exception if call signature does not match
+fetcher.check_ressource('https://some_base.com/unavailable_ressource', 1, True);
+```
+
 # Things to add
 
 - verify -\> less_than, more_or_equal_than
 - special type-validators for setup
   - AnyInt().GreaterThan(5)
-- setup().throws
 - setup().sequence(…)

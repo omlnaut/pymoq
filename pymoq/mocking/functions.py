@@ -47,6 +47,9 @@ class FunctionMock:
         return True
 
 # %% ../../nbs/04_mocking.functions.ipynb 39
+def _throw(exception: Exception) -> None:
+    raise exception
+
 class Setup:
     "This class bundles a signature validator with a call-result-action"
     def __init__(self, signature_validator: SignatureValidator):
@@ -59,6 +62,10 @@ class Setup:
     def returns(self, return_value_generator: ReturnValueGenerator) -> None:
         "Set the `ReturnValueGenerator` to be called when this setup is successfully called"
         self._return_value_generator = return_value_generator
+        
+    def throws(self, exception: Exception) -> None:
+        "Sets a `ReturnValueGenerator` that throws the specified exception when called"
+        self._return_value_generator = lambda *args, **kwargs: _throw(exception)
         
     def get_return_value(self, *args, **kwargs):
         "Calls the underlying `ReturnValueGenerator` the get the return value for the exact argument list"
