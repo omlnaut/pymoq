@@ -122,7 +122,6 @@ with pytest.raises(WebException):
     fetcher.check_ressource('unavailable_ressource', 1, True)
     
 # does not raise exception if call signature does not match
-
 fetcher.check_ressource('available_ressource', 1, True);
 ```
 
@@ -132,3 +131,8 @@ fetcher.check_ressource('available_ressource', 1, True);
 - special type-validators for setup
   - AnyInt().GreaterThan(5)
 - setup().sequence(…)
+- documentation
+  - Validators (type_specifics, passing lambdas, passing constants,
+    passing types)
+  - setup options (returns, throws, …)
+  - verify options (times, more_than, …)
