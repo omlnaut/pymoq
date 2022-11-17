@@ -100,6 +100,7 @@ fetcher.check_ressource('ressource', 1, verbose=True)
 # assert
 mock.get.verify(str, int, bool).times(3)
 mock.get.verify(str, int, bool).more_than(1)
+mock.get.verify(str, int, bool).less_than(4)
 mock.get.verify(str, str).never()
 ```
 

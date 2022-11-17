@@ -138,9 +138,14 @@ class VerifiedCalls:
         self.times(0)
         
     def more_than(self, lower_bound: int):
-        """Asserts that at more than `lower_bound` verified calls were made"""
+        """Asserts that more than `lower_bound` verified calls were made"""
         msg = self._build_error_msg(f"Expected more than {lower_bound} calls, got {self.verified}.")
-        assert self.verified > lower_bound, msg
+        assert lower_bound < self.verified, msg
+        
+    def less_than(self, upper_bound: int):
+        """Asserts that less than `upper_bound` verified calls were made"""
+        msg = self._build_error_msg(f"Expected less than {upper_bound} calls, got {self.verified}.")
+        assert self.verified < upper_bound, msg
         
     def _build_error_msg(self, general_msg: str) -> str:
         calls_str = "Matched Calls:\n\t" + "\n\t".join(map(str, self.verified_calls))
