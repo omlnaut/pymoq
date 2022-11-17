@@ -130,10 +130,10 @@ fetcher.check_ressource('available_ressource', 1, True);
 
 # Things to add
 
-- verify -\> less_than, more_or_equal_than
 - special type-validators for setup
   - AnyInt().GreaterThan(5)
 - setup().sequence(…)
+- return convenience (.returns(5))
 - documentation
   - Validators (type_specifics, passing lambdas, passing constants,
     passing types)
