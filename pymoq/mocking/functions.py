@@ -59,9 +59,13 @@ class Setup:
         "Uses the underlying `SignatureValidator` to determine if the argument list is valid"
         return self._signature_validator.is_valid(*args, **kwargs)
         
-    def returns(self, return_value_generator: ReturnValueGenerator) -> None:
+    def returns(self, return_value_generator: Any) -> None:
         "Set the `ReturnValueGenerator` to be called when this setup is successfully called"
-        self._return_value_generator = return_value_generator
+        match return_value_generator:
+            case ReturnValueGenerator():
+                self._return_value_generator = return_value_generator
+            case _:
+                self._return_value_generator = lambda *args, **kwargs: return_value_generator
         
     def returns_sequence(self, sequence: Iterable) -> None:
         "Sets the `ReturnValueGenerator` that returns the elements in `sequence` in order. Throws an exception if no items are left."
@@ -85,7 +89,7 @@ def setup(self, *args, **kwargs):
     
     return self._setups[-1]
 
-# %% ../../nbs/04_mocking.functions.ipynb 56
+# %% ../../nbs/04_mocking.functions.ipynb 59
 @patch_to(FunctionMock)
 def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any], verbose: bool=False) -> dict[str, Any]:
     if verbose: print("fill_up_arg_list")
@@ -103,7 +107,7 @@ def fill_up_arg_list(self, args: list[Any], kwargs: dict[str, Any], verbose: boo
         
     return kwargs
 
-# %% ../../nbs/04_mocking.functions.ipynb 65
+# %% ../../nbs/04_mocking.functions.ipynb 68
 @patch_to(FunctionMock)
 def __call__(self, *args, **kwargs):
     if self._is_class_method:

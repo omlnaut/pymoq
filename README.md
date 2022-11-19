@@ -59,7 +59,7 @@ import pymoq.mocking.objects
 mock = pymoq.mocking.objects.Mock(IWeb)
 mock.get\
     .setup('https://some_base.com/ressource', int, False)\
-    .returns(lambda self,url,page,verbose: True)
+    .returns(True)
 
 fetcher = RessourceFetcher(mock)
 ```
@@ -94,7 +94,7 @@ mock = pymoq.mocking.objects.Mock(IWeb)
 fetcher = RessourceFetcher(mock)
 
 # setup
-mock.get.setup(str, int, bool).returns(lambda self,url,page,verbose: True)
+mock.get.setup(str, int, bool).returns(True)
 
 # act
 fetcher.check_ressource('ressource', 1)
