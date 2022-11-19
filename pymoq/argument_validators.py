@@ -100,9 +100,23 @@ class AnyInt:
         self._validators.append(argument_validator_from_argument(greather_func, name=self._name, position=self._position))
         return self
     
+    def greather_than_or_equal(self, lower: int) -> "AnyInt":
+        greather_func = lambda value: lower<=value
+        self._validator_names.append(f"greather_than_or_equal({lower})")
+        
+        self._validators.append(argument_validator_from_argument(greather_func, name=self._name, position=self._position))
+        return self
+    
     def less_than(self, upper: int) -> "AnyInt":
         less_func = lambda value: value<upper
         self._validator_names.append(f"less_than({upper})")
+        
+        self._validators.append(argument_validator_from_argument(less_func, name=self._name, position=self._position))
+        return self
+    
+    def less_than_or_equal(self, upper: int) -> "AnyInt":
+        less_func = lambda value: value<=upper
+        self._validator_names.append(f"less_than_or_equal({upper})")
         
         self._validators.append(argument_validator_from_argument(less_func, name=self._name, position=self._position))
         return self

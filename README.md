@@ -86,6 +86,10 @@ specific call signature. This can easily be done via the `.verify`
 method:
 
 ``` python
+from pymoq.argument_validators import AnyInt
+```
+
+``` python
 mock = pymoq.mocking.objects.Mock(IWeb)
 fetcher = RessourceFetcher(mock)
 
@@ -104,6 +108,8 @@ mock.get.verify(str, int, bool).more_than_or_equal_to(3)
 mock.get.verify(str, int, bool).less_than(4)
 mock.get.verify(str, int, bool).less_than_or_equal_to(3)
 mock.get.verify(str, str).never()
+
+mock.get.verify(str, AnyInt('page', 2).less_than(2), bool).times(2)
 ```
 
 ### Setup exceptions
@@ -130,8 +136,6 @@ fetcher.check_ressource('available_ressource', 1, True);
 
 # Things to add
 
-- special type-validators for setup
-  - AnyInt().GreaterThan(5)
 - setup().sequence(…)
 - return convenience (.returns(5))
 - documentation
