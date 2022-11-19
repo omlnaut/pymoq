@@ -11,16 +11,10 @@ website:
   twitter-card: true
   open-graph: true
   repo-actions: [issue]
-  sidebar:
-    style: floating
-    contents:
-     - auto: "/*.ipynb"
-     - section: Implementation
-       contents: implementation/*
   navbar:
     background: primary
     search: true
-    left:
-     - text: "Implementation"
-       href: implementation/00_core.ipynb
+  sidebar:
+    style: floating
+
 metadata-files: [nbdev.yml, sidebar.yml]

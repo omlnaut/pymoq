@@ -1,0 +1,11 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 00_core.ipynb
+      - 01_validators.ipynb
+      - 02_signature_validators.ipynb
+      - 03_return_value_generators.ipynb
+      - 04_mocking.functions.ipynb
+      - 05_mocking_objects.ipynb
+      - 06_Verfiy.ipynb
