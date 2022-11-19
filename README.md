@@ -112,6 +112,21 @@ mock.get.verify(str, str).never()
 mock.get.verify(str, AnyInt('page', 2).less_than(2), bool).times(2)
 ```
 
+### Setup sequences
+
+``` python
+mock = pymoq.mocking.objects.Mock(IWeb)
+mock.get.setup('resource', int, bool).returns_sequence([1,2,3])
+
+assert mock.get('resource', 1, True)==1
+assert mock.get('resource', 2, False)==2
+assert mock.get('resource', 3, True)==3
+
+print(mock.get('ressource', 1, True))
+```
+
+    None
+
 ### Setup exceptions
 
 ``` python
@@ -136,7 +151,6 @@ fetcher.check_ressource('available_ressource', 1, True);
 
 # Things to add
 
-- setup().sequence(…)
 - return convenience (.returns(5))
 - documentation
   - Validators (type_specifics, passing lambdas, passing constants,

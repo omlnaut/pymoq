@@ -5,7 +5,7 @@ __all__ = ['is_class_method', 'add_self_parameter', 'remove_self_parameter', 'Fu
 
 # %% ../../nbs/04_mocking.functions.ipynb 2
 import inspect
-from typing import Any
+from typing import Any, Iterable
 
 from ..core import AnyCallable
 from ..argument_validators import ArgumentFunctionValidator, AnyArg
@@ -62,6 +62,10 @@ class Setup:
     def returns(self, return_value_generator: ReturnValueGenerator) -> None:
         "Set the `ReturnValueGenerator` to be called when this setup is successfully called"
         self._return_value_generator = return_value_generator
+        
+    def returns_sequence(self, sequence: Iterable) -> None:
+        "Sets the `ReturnValueGenerator` that returns the elements in `sequence` in order. Throws an exception if no items are left."
+        self._return_value_generator = lambda *args, **kwargs: sequence.pop(0)
         
     def throws(self, exception: Exception) -> None:
         "Sets a `ReturnValueGenerator` that throws the specified exception when called"
