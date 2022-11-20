@@ -1,4 +1,13 @@
 website:
   sidebar:
     contents:
-
+      - index.ipynb
+      - section: Implementation
+        contents:
+          - implementation/00_core.ipynb
+          - implementation/01_validators.ipynb
+          - implementation/02_signature_validators.ipynb
+          - implementation/03_return_value_generators.ipynb
+          - implementation/04_mocking.functions.ipynb
+          - implementation/05_mocking_objects.ipynb
+          - implementation/06_Verfiy.ipynb
