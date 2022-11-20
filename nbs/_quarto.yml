@@ -14,9 +14,9 @@ website:
   sidebar:
     style: floating
     contents:
-     - auto: "/*.ipynb"
-     - section: Implementation
-       contents: implementation/*
+    - auto: "/*.ipynb"
+    - index.ipynb
+
   navbar:
     background: primary
     search: true
