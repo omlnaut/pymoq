@@ -1,6 +1,7 @@
 project:
   type: website
-
+  preview:
+    port: 3000
 format:
   html:
     theme: cosmo
