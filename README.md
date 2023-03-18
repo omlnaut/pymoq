@@ -83,7 +83,6 @@ specific call signature. This can easily be done via the `.verify`
 method:
 
 ``` python
-from pymoq.argument_validators import AnyInt
 mock = Mock(IWeb)
 fetcher = RessourceFetcher(mock)
 
@@ -105,8 +104,6 @@ mock.get.verify(str, str).never()
 
 mock.get.verify(str, AnyInt('page', 2).less_than(2), bool).times(2)
 ```
-
-    NameError: name 'AnyInt' is not defined
 
 ### Setup sequences
 
