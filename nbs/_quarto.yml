@@ -24,4 +24,6 @@ website:
     left:
      - text: "Implementation"
        href: implementation/00_core.ipynb
+     - text: "Documentation"
+       href: doc/general.ipynb
 metadata-files: [nbdev.yml, sidebar.yml]

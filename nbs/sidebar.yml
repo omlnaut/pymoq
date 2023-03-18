@@ -11,3 +11,6 @@ website:
           - implementation/04_mocking.functions.ipynb
           - implementation/05_mocking_objects.ipynb
           - implementation/06_Verfiy.ipynb
+      - section: Documentation
+        contents:
+          - doc/general.ipynb
