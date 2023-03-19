@@ -150,7 +150,3 @@ fetcher.check_ressource('available_ressource', 1, True);
 Refer to [General
 Structure](https://omlnaut.github.io/pymoq/doc/general.html) for more
 detail.
-
-# Things to add
-
-- publish on pypi, conda
