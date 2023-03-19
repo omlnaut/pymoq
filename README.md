@@ -9,7 +9,10 @@ from pymoq.all import *
 
 Following the end-to-end
 [tutorial](https://nbdev.fast.ai/Tutorials/tutorial.html) for nbdev.
+
 Project homepage: [github](https://github.com/omlnaut/pymoq)
+
+Full documentation: [documentation](https://omlnaut.github.io/pymoq/)
 
 ## Install
 
@@ -144,7 +147,9 @@ fetcher.check_ressource('available_ressource', 1, True);
 
 ## Deep Dive
 
-Refer to `Documentation -> General Structure` for more detail.
+Refer to [General
+Structure](https://omlnaut.github.io/pymoq/doc/general.html) for more
+detail.
 
 # Things to add
 
