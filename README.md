@@ -17,7 +17,7 @@ Project homepage: [github](https://github.com/omlnaut/pymoq)
 pip install pymoq
 ```
 
-## How to use
+## Quickstart
 
 Suppose we have the following setup in a python backend.
 
@@ -142,11 +142,10 @@ with pytest.raises(WebException):
 fetcher.check_ressource('available_ressource', 1, True);
 ```
 
+## Deep Dive
+
+Refer to `Documentation -> General Structure` for more detail.
+
 # Things to add
 
-- documentation
-  - Validators (type_specifics, passing lambdas, passing constants,
-    passing types)
-  - setup options (returns, throws, …)
-  - verify options (times, more_than, …)
 - publish on pypi, conda
