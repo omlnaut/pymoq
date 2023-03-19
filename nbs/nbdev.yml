@@ -2,7 +2,7 @@ project:
   output-dir: _docs
 
 website:
-  title: "pymoq"
+  title: "moqpy"
   site-url: "https://omlnaut.github.io/pymoq"
   description: "Extending unittest-mock with moq-like validators"
   repo-branch: main
