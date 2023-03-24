@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.475">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="From function object to function mock">
+
+<title>moqpy - Mocking functions</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="moqpy - Mocking functions">
+<meta property="og:description" content="From function object to function mock">
+<meta property="og:site-name" content="moqpy">
+<meta name="twitter:title" content="moqpy - Mocking functions">
+<meta name="twitter:description" content="From function object to function mock">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">moqpy</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../implementation/core.html" aria-current="page">
+ <span class="menu-text">Implementation</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../doc/general.html">
+ <span class="menu-text">Documentation</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Mocking functions</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">pymoq</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">Implementation</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../implementation/core.html" class="sidebar-item-text sidebar-link">Core</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../implementation/validators.html" class="sidebar-item-text sidebar-link">Validators</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../implementation/signature_validators.html" class="sidebar-item-text sidebar-link">Signature validators</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../implementation/return_value_generators.html" class="sidebar-item-text sidebar-link">Return value generators</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../implementation/mocking.functions.html" class="sidebar-item-text sidebar-link active">Mocking functions</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../implementation/mocking_objects.html" class="sidebar-item-text sidebar-link">Mocking objects</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../implementation/verfiy.html" class="sidebar-item-text sidebar-link">Verification</a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">Documentation</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../doc/general.html" class="sidebar-item-text sidebar-link">General structure</a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#checking-arguments-against-original-signature" id="toc-checking-arguments-against-original-signature" class="nav-link active" data-scroll-target="#checking-arguments-against-original-signature">Checking arguments against original signature</a>
+  <ul class="collapse">
+  <li><a href="#binding-free-methods" id="toc-binding-free-methods" class="nav-link" data-scroll-target="#binding-free-methods">Binding free methods</a></li>
+  <li><a href="#binding-class-methods" id="toc-binding-class-methods" class="nav-link" data-scroll-target="#binding-class-methods">Binding class methods</a></li>
+  <li><a href="#is_class_method" id="toc-is_class_method" class="nav-link" data-scroll-target="#is_class_method">is_class_method</a></li>
+  <li><a href="#remove_self_parameter" id="toc-remove_self_parameter" class="nav-link" data-scroll-target="#remove_self_parameter">remove_self_parameter</a></li>
+  <li><a href="#add_self_parameter" id="toc-add_self_parameter" class="nav-link" data-scroll-target="#add_self_parameter">add_self_parameter</a></li>
+  <li><a href="#function-mock" id="toc-function-mock" class="nav-link" data-scroll-target="#function-mock">Function Mock</a></li>
+  <li><a href="#functionmock" id="toc-functionmock" class="nav-link" data-scroll-target="#functionmock">FunctionMock</a></li>
+  </ul></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a>
+  <ul class="collapse">
+  <li><a href="#setup-1" id="toc-setup-1" class="nav-link" data-scroll-target="#setup-1">Setup</a></li>
+  <li><a href="#setup.returns" id="toc-setup.returns" class="nav-link" data-scroll-target="#setup.returns">Setup.returns</a></li>
+  <li><a href="#functionmock.setup" id="toc-functionmock.setup" class="nav-link" data-scroll-target="#functionmock.setup">FunctionMock.setup</a></li>
+  <li><a href="#self-argument-on-class-methods" id="toc-self-argument-on-class-methods" class="nav-link" data-scroll-target="#self-argument-on-class-methods">self argument on class methods</a></li>
+  </ul></li>
+  <li><a href="#call-validation" id="toc-call-validation" class="nav-link" data-scroll-target="#call-validation">Call validation</a>
+  <ul class="collapse">
+  <li><a href="#dealing-with-default-values" id="toc-dealing-with-default-values" class="nav-link" data-scroll-target="#dealing-with-default-values">Dealing with default-values</a></li>
+  <li><a href="#functionmock.fill_up_arg_list" id="toc-functionmock.fill_up_arg_list" class="nav-link" data-scroll-target="#functionmock.fill_up_arg_list">FunctionMock.fill_up_arg_list</a></li>
+  <li><a href="#call-method" id="toc-call-method" class="nav-link" data-scroll-target="#call-method">Call method</a></li>
+  <li><a href="#on-class-methods" id="toc-on-class-methods" class="nav-link" data-scroll-target="#on-class-methods">On class methods</a></li>
+  <li><a href="#named-arguments-in-setup" id="toc-named-arguments-in-setup" class="nav-link" data-scroll-target="#named-arguments-in-setup">Named arguments in setup</a></li>
+  </ul></li>
+  <li><a href="#build-library" id="toc-build-library" class="nav-link" data-scroll-target="#build-library">Build library</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/omlnaut/pymoq/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Mocking functions</h1>
+</div>
+
+<div>
+  <div class="description">
+    From function object to function mock
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="checking-arguments-against-original-signature" class="level2">
+<h2 class="anchored" data-anchor-id="checking-arguments-against-original-signature">Checking arguments against original signature</h2>
+<p>For a given argument list, we want to know whether the original function can be called with that set of parameters. This can be done in two steps: 1. Extract the signature 2. Try to bind the argument list against the signature. This throws an exception if the arguments can not be matched against the signature</p>
+<section id="binding-free-methods" class="level3">
+<h3 class="anchored" data-anchor-id="binding-free-methods">Binding free methods</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(a: <span class="bu">int</span>, b: <span class="bu">str</span>, c:<span class="bu">str</span><span class="op">|</span><span class="va">None</span> <span class="op">=</span><span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Successful bind:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>inspect.signature(f).bind(<span class="dv">1</span>, <span class="st">"1"</span>, <span class="st">"2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;BoundArguments (a=1, b='1', c='2')&gt;</code></pre>
+</div>
+</div>
+<p>Unsuccessful bind:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    inspect.signature(f).bind(<span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>missing a required argument: 'b'</code></pre>
+</div>
+</div>
+</section>
+<section id="binding-class-methods" class="level3">
+<h3 class="anchored" data-anchor-id="binding-class-methods">Binding class methods</h3>
+<p>When binding class methods, the special case of the self parameter has to be considered.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> A:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> f(<span class="va">self</span>, a:<span class="bu">int</span>):</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> a<span class="op">+</span><span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>signature <span class="op">=</span> inspect.signature(A.f)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    signature.bind(<span class="dv">1</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(e)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>missing a required argument: 'a'</code></pre>
+</div>
+</div>
+<p>We will mark a function as ‘class’-function if it has a parameter called ‘self’.</p>
+<hr>
+<p><a href="https://github.com/omlnaut/pymoq/blob/main/pymoq/mocking/functions.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="is_class_method" class="level3">
+<h3 class="anchored" data-anchor-id="is_class_method">is_class_method</h3>
+<blockquote class="blockquote">
+<pre><code> is_class_method (func:pymoq.core.AnyCallable)</code></pre>
+</blockquote>
+<p>Returns true if the given function has a parameter called ‘self’</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> is_class_method(A.f)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> is_class_method(f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/omlnaut/pymoq/blob/main/pymoq/mocking/functions.py#L28" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="remove_self_parameter" class="level3">
+<h3 class="anchored" data-anchor-id="remove_self_parameter">remove_self_parameter</h3>
+<blockquote class="blockquote">
+<pre><code> remove_self_parameter (args:tuple[typing.Any])</code></pre>
+</blockquote>
+<p>Removes the first parameter of the argument list.</p>
+<hr>
+<p><a href="https://github.com/omlnaut/pymoq/blob/main/pymoq/mocking/functions.py#L24" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="add_self_parameter" class="level3">
+<h3 class="anchored" data-anchor-id="add_self_parameter">add_self_parameter</h3>
+<blockquote class="blockquote">
+<pre><code> add_self_parameter (args:tuple[typing.Any])</code></pre>
+</blockquote>
+<p>Adds <code>None</code> to the front of the given tuple of arguments</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> add_self_parameter((<span class="dv">1</span>,<span class="dv">2</span>))<span class="op">==</span>(<span class="va">None</span>,<span class="dv">1</span>,<span class="dv">2</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> remove_self_parameter((<span class="va">None</span>, <span class="dv">1</span>,<span class="dv">2</span>))<span class="op">==</span>(<span class="dv">1</span>,<span class="dv">2</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> remove_self_parameter(add_self_parameter((<span class="dv">1</span>,<span class="dv">2</span>))) <span class="op">==</span> (<span class="dv">1</span>,<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="function-mock" class="level3">
+<h3 class="anchored" data-anchor-id="function-mock">Function Mock</h3>
+<hr>
+<p><a href="https://github.com/omlnaut/pymoq/blob/main/pymoq/mocking/functions.py#L33" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="functionmock" class="level3">
+<h3 class="anchored" data-anchor-id="functionmock">FunctionMock</h3>
+<blockquote class="blockquote">
+<pre><code> FunctionMock (func:pymoq.core.AnyCallable)</code></pre>
+</blockquote>
+<p>Mocks a function object based on its signature</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock._argument_names <span class="op">==</span> [<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Successful binds:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.arguments_valid(<span class="dv">1</span>, <span class="st">"1"</span>, <span class="st">"2"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.arguments_valid(<span class="dv">1</span>, <span class="st">"1"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.arguments_valid(<span class="dv">1</span>, <span class="st">"1"</span>, c<span class="op">=</span><span class="st">"2"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.arguments_valid(a<span class="op">=</span><span class="dv">1</span>, b<span class="op">=</span><span class="st">"1"</span>, c<span class="op">=</span><span class="st">"2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the types are not checked with this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.arguments_valid(<span class="dv">1</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Unsuccessful binds might be:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_exception(func: AnyCallable):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        func()</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(e)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="va">False</span>, <span class="st">"Expected Exception to be thrown"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>show_exception(<span class="kw">lambda</span>: mock.arguments_valid(<span class="dv">1</span>))<span class="co"># too few arguments</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>missing a required argument: 'b'</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>show_exception(<span class="kw">lambda</span>:mock.arguments_valid(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>)) <span class="co"># too many arguments</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>too many positional arguments</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>show_exception(<span class="kw">lambda</span>: mock.arguments_valid(<span class="dv">1</span>,<span class="dv">2</span>,d<span class="op">=</span><span class="dv">3</span>)) <span class="co"># unknown argument name</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>got an unexpected keyword argument 'd'</code></pre>
+</div>
+</div>
+<p>Special case class method. Note that when calling <code>arguments_valid</code> directly, we need to pass in a dummy <code>self</code> argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(A.f)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.arguments_valid(<span class="va">None</span>, <span class="dv">1</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>show_exception(<span class="kw">lambda</span>: mock.arguments_valid(<span class="va">None</span>))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>show_exception(<span class="kw">lambda</span>: mock.arguments_valid(<span class="va">None</span>, <span class="dv">1</span>,<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>missing a required argument: 'a'
+too many positional arguments</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>We want to be able to create call-setups on the function mock. A setup consists of a signature validation and a return value generator. When the mock is called with a list of arguments, we check this list against the signature validator. If the call matches, we call the return value generator to generate the return value.</p>
+<hr>
+<p><a href="https://github.com/omlnaut/pymoq/blob/main/pymoq/mocking/functions.py#L53" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="setup-1" class="level3">
+<h3 class="anchored" data-anchor-id="setup-1">Setup</h3>
+<blockquote class="blockquote">
+<pre><code> Setup (signature_validator:pymoq.signature_validators.SignatureValidator)</code></pre>
+</blockquote>
+<p>This class bundles a signature validator with a call-result-action</p>
+<hr>
+<p><a href="https://github.com/omlnaut/pymoq/blob/main/pymoq/mocking/functions.py#L62" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="setup.returns" class="level3">
+<h3 class="anchored" data-anchor-id="setup.returns">Setup.returns</h3>
+<blockquote class="blockquote">
+<pre><code> Setup.returns (return_value_generator:Any)</code></pre>
+</blockquote>
+<p>Set the <a href="https://omlnaut.github.io/pymoq/implementation/return_value_generators.html#returnvaluegenerator"><code>ReturnValueGenerator</code></a> to be called when this setup is successfully called</p>
+<hr>
+<p><a href="https://github.com/omlnaut/pymoq/blob/main/pymoq/mocking/functions.py#L84" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="functionmock.setup" class="level3">
+<h3 class="anchored" data-anchor-id="functionmock.setup">FunctionMock.setup</h3>
+<blockquote class="blockquote">
+<pre><code> FunctionMock.setup (*args, **kwargs)</code></pre>
+</blockquote>
+<p>A setup can now be defined by passing a function that takes in the call parameters and outputs the appropriate value:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(f)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>mock.setup(ArgumentFunctionValidator(<span class="kw">lambda</span> a: <span class="bu">isinstance</span>(a, <span class="bu">int</span>), name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">0</span>)).returns(<span class="kw">lambda</span> first, <span class="op">**</span>kwargs: first<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock._setups[<span class="dv">0</span>].get_return_value(<span class="dv">4</span>) <span class="op">==</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock._setups[<span class="dv">0</span>].get_return_value(<span class="dv">4</span>)<span class="op">==</span><span class="dv">5</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock._setups[<span class="dv">0</span>].get_return_value(<span class="dv">4</span>, a<span class="op">=</span><span class="dv">1</span>)<span class="op">==</span><span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock._setups[<span class="dv">0</span>].is_valid(<span class="dv">1</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> mock._setups[<span class="dv">0</span>].is_valid(<span class="st">"1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>or by passing a constant, which is then returned regardless of the call values:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(f)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>mock.setup(ArgumentFunctionValidator(<span class="kw">lambda</span> a: <span class="bu">isinstance</span>(a, <span class="bu">int</span>), name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">0</span>)).returns(<span class="dv">5</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock._setups[<span class="dv">0</span>].get_return_value() <span class="op">==</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="self-argument-on-class-methods" class="level3">
+<h3 class="anchored" data-anchor-id="self-argument-on-class-methods">self argument on class methods</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> A:</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> f(<span class="va">self</span>, a: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(A.f)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>mock.setup(<span class="kw">lambda</span> a: <span class="bu">isinstance</span>(a, <span class="bu">int</span>)).returns(<span class="kw">lambda</span> <span class="va">self</span>, a: <span class="dv">5</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock._setups[<span class="dv">0</span>].is_valid(<span class="va">None</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>mock._setups[<span class="dv">0</span>]._signature_validator.argument_validators</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[ArgumentFunctionValidator(argument_name:self, position=0): callable(),
+ ArgumentFunctionValidator(argument_name:a, position=1): callable()]</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="call-validation" class="level2">
+<h2 class="anchored" data-anchor-id="call-validation">Call validation</h2>
+<p>When called, a function mock should perform the following steps: 1. check if the argument list binds against the original functions signature 2. check if the signature validator matches for the stored Setups in order they were added 3. The first setup with a matching signature validator should be used for generating the return value</p>
+<p>Edge cases: - If no Setup matches, return None</p>
+<section id="dealing-with-default-values" class="level3">
+<h3 class="anchored" data-anchor-id="dealing-with-default-values">Dealing with default-values</h3>
+<p>The number of arguments passed to a function call might differ from call to call if default values are used:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(a:<span class="bu">int</span>, b:<span class="bu">str</span><span class="op">=</span><span class="st">"str"</span>):</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(f)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>mock.setup(ArgumentFunctionValidator(<span class="kw">lambda</span> a: <span class="va">True</span>, name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">0</span>), ArgumentFunctionValidator(<span class="kw">lambda</span> b: <span class="va">True</span>, name<span class="op">=</span><span class="st">'b'</span>, position<span class="op">=</span><span class="dv">1</span>)).returns(<span class="kw">lambda</span> <span class="op">*</span>args,<span class="op">**</span>kwargs: <span class="bu">print</span>(args, kwargs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>mock._setups[<span class="dv">0</span>].get_return_value(<span class="dv">1</span>), mock._setups[<span class="dv">0</span>].get_return_value(<span class="dv">1</span>, b<span class="op">=</span><span class="st">"b"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(1,) {}
+(1,) {'b': 'b'}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>(None, None)</code></pre>
+</div>
+</div>
+<p>Next, we’ll match an argument list against the default values.</p>
+<hr>
+<p><a href="https://github.com/omlnaut/pymoq/blob/main/pymoq/mocking/functions.py#L94" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="functionmock.fill_up_arg_list" class="level3">
+<h3 class="anchored" data-anchor-id="functionmock.fill_up_arg_list">FunctionMock.fill_up_arg_list</h3>
+<blockquote class="blockquote">
+<pre><code> FunctionMock.fill_up_arg_list (args:list[typing.Any],
+                                kwargs:dict[str,typing.Any],
+                                verbose:bool=False)</code></pre>
+</blockquote>
+<p>If a default-value is already present via name, the default value should not be used:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(a: <span class="bu">int</span>, b: <span class="bu">str</span>, c:<span class="bu">str</span><span class="op">|</span><span class="va">None</span> <span class="op">=</span><span class="st">'default str'</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(f)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.fill_up_arg_list([<span class="dv">1</span>, <span class="fl">1.1</span>], {<span class="st">'c'</span>: <span class="st">'custom str'</span>}) <span class="op">==</span> {<span class="st">'c'</span>: <span class="st">'custom str'</span>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If a default-value is already overriden by a positional argument, it should not be used:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.fill_up_arg_list([<span class="dv">1</span>, <span class="fl">1.1</span>, <span class="st">'custom str'</span>], {}) <span class="op">==</span> {}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If neither is the case, the default-value should be used:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock.fill_up_arg_list([<span class="dv">1</span>, <span class="fl">1.1</span>], {}) <span class="op">==</span> {<span class="st">'c'</span>: <span class="st">'default str'</span>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="call-method" class="level3">
+<h3 class="anchored" data-anchor-id="call-method">Call method</h3>
+<p>Calls on a mock should be recorded. This makes it possible to unit-test that specific argument combinations were called a specific amount of time.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(a: <span class="bu">int</span>, b: <span class="bu">str</span>, c:<span class="bu">str</span><span class="op">|</span><span class="va">None</span> <span class="op">=</span><span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Without any setup a call either fails or returns None:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>test_fail(<span class="kw">lambda</span>: mock())</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>,<span class="st">"1"</span>) <span class="kw">is</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we’ll add two setups. The first one is the more generic one that only checks if <code>a</code> is an <code>int</code> and <code>b</code> is a <code>string</code>. The second one checks if <code>a==2</code> and <code>b</code> is a string.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this will be prettier, I promise!</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(f)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generic type checker</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>mock.setup(</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> a: <span class="bu">isinstance</span>(a, <span class="bu">int</span>), name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> b: <span class="bu">isinstance</span>(b, <span class="bu">str</span>), name<span class="op">=</span><span class="st">'b'</span>, position<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> c: c <span class="kw">is</span> <span class="va">None</span>, name<span class="op">=</span><span class="st">'c'</span>, position<span class="op">=</span><span class="dv">2</span>)).returns(<span class="kw">lambda</span> a,b,c: <span class="dv">5</span>)</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Value checker</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>mock.setup(</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> a: a<span class="op">==</span><span class="dv">2</span>, name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> b: <span class="bu">isinstance</span>(b, <span class="bu">str</span>), name<span class="op">=</span><span class="st">'b'</span>, position<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> c: c <span class="kw">is</span> <span class="va">None</span>, name<span class="op">=</span><span class="st">'c'</span>, position<span class="op">=</span><span class="dv">2</span>)).returns(<span class="kw">lambda</span> a,b,c: <span class="dv">6</span>)</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">2</span>, <span class="st">'anyString'</span>)<span class="op">==</span><span class="dv">6</span></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>, <span class="st">'anyString'</span>)<span class="op">==</span><span class="dv">5</span></span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>, <span class="dv">1</span>) <span class="kw">is</span> <span class="va">None</span></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock._calls <span class="op">==</span> [</span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>    ((<span class="dv">2</span>, <span class="st">'anyString'</span>), {<span class="st">'c'</span>: <span class="va">None</span>}),</span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>    ((<span class="dv">1</span>, <span class="st">'anyString'</span>), {<span class="st">'c'</span>: <span class="va">None</span>}),</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>    ((<span class="dv">1</span>, <span class="dv">1</span>), {<span class="st">'c'</span>: <span class="va">None</span>})</span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Lastly, the generic return value generator could be used to return a value based on the input value:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(f)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generic type checker</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>mock.setup(</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> a: <span class="bu">isinstance</span>(a, <span class="bu">int</span>), name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> b: <span class="bu">isinstance</span>(b, <span class="bu">str</span>), name<span class="op">=</span><span class="st">'b'</span>, position<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> c: c <span class="kw">is</span> <span class="va">None</span>, name<span class="op">=</span><span class="st">'c'</span>, position<span class="op">=</span><span class="dv">2</span>)).returns(<span class="kw">lambda</span> a,b,c: a<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>,<span class="st">'anyString'</span>)<span class="op">==</span><span class="dv">2</span></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">2</span>,<span class="st">'anyString'</span>)<span class="op">==</span><span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="on-class-methods" class="level3">
+<h3 class="anchored" data-anchor-id="on-class-methods">On class methods</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> A:</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> f(<span class="va">self</span>, a: <span class="bu">int</span>, b: <span class="bu">str</span>, c:<span class="bu">str</span><span class="op">|</span><span class="va">None</span> <span class="op">=</span><span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(A.f)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>test_fail(<span class="kw">lambda</span>: mock())</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>, <span class="st">"1"</span>, <span class="st">"c"</span>) <span class="kw">is</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this will be prettier, I promise!</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(A.f)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generic type checker</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>mock.setup(</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> a: <span class="bu">isinstance</span>(a, <span class="bu">int</span>), name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> b: <span class="bu">isinstance</span>(b, <span class="bu">str</span>), name<span class="op">=</span><span class="st">'b'</span>, position<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> c: c <span class="kw">is</span> <span class="va">None</span>, name<span class="op">=</span><span class="st">'c'</span>, position<span class="op">=</span><span class="dv">3</span>)).returns(<span class="kw">lambda</span> <span class="va">self</span>,a,b,c: <span class="dv">5</span>)</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Value checker</span></span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>mock.setup(</span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> a: a<span class="op">==</span><span class="dv">2</span>, name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> b: <span class="bu">isinstance</span>(b, <span class="bu">str</span>), name<span class="op">=</span><span class="st">'b'</span>, position<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> c: c <span class="kw">is</span> <span class="va">None</span>, name<span class="op">=</span><span class="st">'c'</span>, position<span class="op">=</span><span class="dv">3</span>)).returns(<span class="kw">lambda</span> <span class="va">self</span>,a,b,c: <span class="dv">6</span>)</span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">2</span>, <span class="st">'anyString'</span>)<span class="op">==</span><span class="dv">6</span></span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>, <span class="st">'anyString'</span>)<span class="op">==</span><span class="dv">5</span></span>
+<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>, <span class="dv">1</span>) <span class="kw">is</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="named-arguments-in-setup" class="level3">
+<h3 class="anchored" data-anchor-id="named-arguments-in-setup">Named arguments in setup</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> A:</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> f(<span class="va">self</span>, a: <span class="bu">int</span>, b: <span class="bu">str</span>, c:<span class="bu">str</span><span class="op">|</span><span class="va">None</span> <span class="op">=</span><span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this will be prettier, I promise!</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>mock <span class="op">=</span> FunctionMock(A.f)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generic type checker</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>mock.setup(</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> a: <span class="bu">isinstance</span>(a, <span class="bu">int</span>), name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> b: <span class="bu">isinstance</span>(b, <span class="bu">str</span>), name<span class="op">=</span><span class="st">'b'</span>, position<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span>ArgumentFunctionValidator(<span class="kw">lambda</span> c: c <span class="kw">is</span> <span class="va">None</span>, name<span class="op">=</span><span class="st">'c'</span>, position<span class="op">=</span><span class="dv">3</span>)).returns(<span class="kw">lambda</span> <span class="va">self</span>,a,b,c: <span class="dv">5</span>)</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Value checker</span></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>mock.setup(</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> a: a<span class="op">==</span><span class="dv">2</span>, name<span class="op">=</span><span class="st">'a'</span>, position<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>    ArgumentFunctionValidator(<span class="kw">lambda</span> b: <span class="bu">isinstance</span>(b, <span class="bu">str</span>), name<span class="op">=</span><span class="st">'b'</span>, position<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span>ArgumentFunctionValidator(<span class="kw">lambda</span> c: c <span class="kw">is</span> <span class="va">None</span>, name<span class="op">=</span><span class="st">'c'</span>, position<span class="op">=</span><span class="dv">3</span>)).returns(<span class="kw">lambda</span> <span class="va">self</span>,a,b,c: <span class="dv">6</span>)</span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">2</span>, <span class="st">'anyString'</span>)<span class="op">==</span><span class="dv">6</span></span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>, <span class="st">'anyString'</span>)<span class="op">==</span><span class="dv">5</span></span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> mock(<span class="dv">1</span>, <span class="dv">1</span>) <span class="kw">is</span> <span class="va">None</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="build-library" class="level1">
+<h1>Build library</h1>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
