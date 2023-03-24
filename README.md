@@ -17,8 +17,11 @@ Full documentation: [documentation](https://omlnaut.github.io/pymoq/)
 ## Install
 
 ``` sh
-pip install pymoq
+pip install moqpy
 ```
+
+The package on pypi is called `mockpy` because `pymoq` was already taken
+:(
 
 ## Quickstart
 
